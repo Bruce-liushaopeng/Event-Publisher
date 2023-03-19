@@ -40,6 +40,7 @@ export async function getStaticProps(context) {
       //always need t o return a props key
       products: data.products,
     },
+    revalidate: 10
   }
 }
 
