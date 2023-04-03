@@ -11,7 +11,7 @@ import Head from "next/head";
 function FilteredEventsPages() {
   const [loadedEvent, setLoadedEvents] = useState();
   const router = useRouter();
-  console.log(router.query.slug)
+  console.log(router.query.slug) // undefine when the page first time render
   let filterData = router.query.slug
   if (!filterData) {
     console.log("filter data not found")
@@ -37,21 +37,32 @@ function FilteredEventsPages() {
     }
   }, [data])
 
-  const numYear = +filterData?.[0]
-  const numMonth = +filterData?.[1]
+  let pageHeadData = (
+      <Head>
+        <title> Filtered Events </title>
+        <meta name="description" content={`A list of filtered events`}/>
+      </Head>
+  )
 
-  const pageHeadData = (
+  if (!loadedEvent) {
+    return (
+        <Fragment>
+          {pageHeadData}
+          <p className="center">Loading...</p>
+        </Fragment>
+
+    )
+  }
+
+  const numYear = +filterData[0]
+  const numMonth = +filterData[1]
+
+   pageHeadData = (
       <Head>
         <title> Filtered Events </title>
         <meta name="description" content={`All events for ${numMonth}/${numYear}`}/>
       </Head>
   )
-
-
-
-  if (!loadedEvent) {
-    return <p className="center">Loading...</p>
-  }
 
 
   if (
