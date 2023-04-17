@@ -18,8 +18,7 @@ function Comments(props) {
       fetch('/api/comments/' + eventId)
       .then(res => res.json())
       .then(data => {
-        console.log(data)
-        setComments(data.comment)
+        setComments(data.comments)
       })
     }
   }, [showComments])
