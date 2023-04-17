@@ -1,14 +1,4 @@
-import {MongoClient} from 'mongodb';
-
-async function connectDataBase() {
-  const client = await MongoClient.connect('mongodb+srv://nextjscourse:nextjscourse@cluster0.lhbqrpk.mongodb.net/?retryWrites=true&w=majority');
-  return client
-}
-
-async function insertDocument(client, document) {
-  const db = client.db('events')
-  await db.collection('newsletter').insertOne(document);
-}
+import {insertDocument, connectDataBase} from '../../helpers/db-util'
 
 async function handler(req, res) {
   if (req.method === "POST") {
@@ -28,7 +18,7 @@ async function handler(req, res) {
     }
 
     try{
-      insertDocument(client, {email: userEmail})
+      insertDocument(client, 'newsletter', {email: userEmail})
       client.close();
     } catch(error){
       console.log("error insert document")

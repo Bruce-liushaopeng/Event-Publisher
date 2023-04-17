@@ -1,11 +1,15 @@
-import { MongoClient } from "mongodb";
+import {insertDocument, connectDataBase, getAllDocuments} from '../../../helpers/db-util'
 
 async function handler(req, res) {
   const eventId = req.query.eventId;
-  const client = await MongoClient.connect(
-    "mongodb+srv://nextjscourse:nextjscourse@cluster0.lhbqrpk.mongodb.net/?retryWrites=true&w=majority"
-  );
-  const db = client.db("events");
+  let client;
+  try {
+    console.log("trying connect")
+    client = await connectDataBase();
+  } catch (error) {
+    res.status(500).json({message: 'Connecting to database failed'})
+    return;
+  }
 
   if (req.method === "POST") {
     // add server side validation
@@ -13,6 +17,7 @@ async function handler(req, res) {
 
     if (!email.includes("@") || name.trim() === "" || text.trim() === "") {
       res.status(422).json({ message: "Invalid input." });
+      client.close();
       return;
     }
 
@@ -23,24 +28,25 @@ async function handler(req, res) {
       eventId,
     };
 
-    const result = await db.collection("comments").insertOne(newComment);
-
-    res.status(201).json({ message: "Added comment", comment: newComment });
-    client.close();
-    return;
+    let result;
+    try{
+      result = insertDocument(client, 'comments', newComment)
+      newComment._id = result.insertedId;
+      res.status(201).json({ message: "Added comment", comment: newComment });
+    } catch(error) {
+      res.status(500).json({message: "Inserting comment failed"})
+    }
   }
 
   if (req.method === "GET") {
-    const documents = await db
-      .collection("comments")
-      .find()
-      .sort({ _id: -1 })
-      .toArray(); // sort id on decending order
-    res.status(200).json({ comments: documents });
-    client.close();
-    return;
+    try {
+      const documents = await getAllDocuments(client, 'comments', {_id: -1})
+      res.status(200).json({ comments: documents });
+    } catch (error) {
+      res.status(500).json({message: "getting comments failed."})
+    }
   }
-
+  client.close();
   
 }
 
