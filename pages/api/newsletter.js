@@ -3,7 +3,7 @@ import {insertDocument, connectDataBase} from '../../helpers/db-util'
 async function handler(req, res) {
   if (req.method === "POST") {
     const userEmail = req.body.email;
-
+    console.log("backend email", userEmail)
     if(!userEmail || !userEmail.includes('@')) {
         res.status(422).json({message: "Invalid email address."})
         return;
@@ -18,18 +18,12 @@ async function handler(req, res) {
     }
 
     try{
-      insertDocument(client, 'newsletter', {email: userEmail})
-      client.close();
+      await insertDocument(client, 'newsletter', {email: userEmail})
     } catch(error){
       console.log("error insert document")
       res.status(500).json({message: 'Insert failed'})
       return;
     }
-    
-    const db = (await client).db();
-
-    
-
     client.close();
     res.status(201).json({message: "signed up"})
   }

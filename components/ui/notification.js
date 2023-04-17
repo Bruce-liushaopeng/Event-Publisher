@@ -7,6 +7,7 @@ function Notification(props) {
   const notificationCtx = useContext(NotificationContext);
 
   const { title, message, status } = props;
+  console.log("status", status)
 
   let statusClasses = '';
 
