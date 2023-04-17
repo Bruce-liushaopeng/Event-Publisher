@@ -25,8 +25,6 @@ async function handler(req, res) {
 
     const result = await db.collection("comments").insertOne(newComment);
 
-    console.log("my result: ");
-    console.log(result);
     res.status(201).json({ message: "Added comment", comment: newComment });
     client.close();
     return;
