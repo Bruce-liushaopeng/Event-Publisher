@@ -10,7 +10,9 @@ export async function connectDataBase() {
 
 export async function insertDocument(client, collection, document) {
   const db = client.db("events");
+  console.log("db-util insert comment")
   const result = await db.collection(collection).insertOne(document);
+  console.log("insert result", result)
   return result;
 }
 
